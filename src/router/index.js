@@ -16,18 +16,31 @@ const router = createRouter({
 					component: Home,
 				},
 				{
-					path: '/UserManage',
+					path: '/user',
 					name: '用户管理',
 					component: () => import('@/views/UserManage/index.vue'),
 				},
 				{
-					path: '/RoleManage',
+					path: '/role',
 					name: '角色管理',
 					component: () => import('@/views/RoleManage/index.vue'),
 				},
 			],
 		},
+		{
+			path: '/login',
+			component: () => import('@/views/Login/index.vue'),
+		},
 	],
+});
+router.beforeEach((to, from, next) => {
+	//@test
+	if (to.matched.length === 0) {
+		// 页面不存在，说明是刷新事件
+		// 在此处执行您需要的操作
+		console.log('111');
+	}
+	next();
 });
 
 export default router;
