@@ -5,7 +5,7 @@
       <rolesearch />
       <!-- 数据操作 -->
       <a-space style="margin-bottom: 10px">
-        <a-button type="primary" class="ele-btn-icon">
+        <a-button style="background-color: #5cc750" type="primary" class="ele-btn-icon">
           <template #icon>
             <plus-outlined />
           </template>
@@ -19,7 +19,7 @@
         </a-button>
       </a-space>
       <!-- 表格 -->
-      <a-table :columns="columns" :dataSource="dataSource">
+      <a-table bordered :columns="columns" :dataSource="dataSource">
         <template #headerCell="{ column }">
           <template v-if="column.key === 'checkbox'">
             <a-checkbox />
@@ -128,7 +128,7 @@ const columns = ref([
   {
     title: '编号',
     key: 'index',
-    width: 60,
+    width: 70,
     align: 'center',
     dataIndex: 'index'
   },

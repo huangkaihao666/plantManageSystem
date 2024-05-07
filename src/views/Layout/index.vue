@@ -52,14 +52,14 @@
           />
           <a-dropdown>
             <a class="ant-dropdown-link" @click.prevent>
-              admin
+              {{ username }}
               <DownOutlined />
             </a>
             <template #overlay>
               <a-menu>
-                <a-menu-item>
+                <!-- <a-menu-item>
                   <a href="javascript:;">个人中心</a>
-                </a-menu-item>
+                </a-menu-item> -->
                 <a-popconfirm
                   placement="topRight"
                   @confirm="confirm"
@@ -98,19 +98,34 @@ import {
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
+import { getLogoutAPI } from '@/apis/login.js'
 
 const selectedKeys = ref(['1'])
 const collapsed = ref(false)
 
 // 登录状态
 const isLogin = ref(false)
-const confirm = (e) => {
+const username = ref('admin')
+onMounted(() => {
+  isLogin.value = localStorage.getItem('token') ? true : false
+  console.log('isLogin', isLogin.value)
+  username.value = localStorage.getItem('username') ? localStorage.getItem('username') : 'admin'
+  console.log('username', username.value)
+})
+
+const confirm = async (e) => {
   console.log(e)
-  message.success('退出登录成功！！！')
+  const res = await getLogoutAPI(username)
+  console.log('logout', res)
+  localStorage.removeItem('token')
+  localStorage.removeItem('username')
+  message.success(res.data)
+  router.push('/login')
 }
 const cancel = (e) => {
   console.log(e)
   message.error('退出登录取消！！！')
+  return
 }
 
 //路由切换

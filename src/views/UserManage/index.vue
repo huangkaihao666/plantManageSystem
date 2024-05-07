@@ -5,7 +5,7 @@
       <usersearch />
       <!-- 数据操作 -->
       <a-space style="margin-bottom: 10px">
-        <a-button type="primary" class="ele-btn-icon">
+        <a-button style="background-color: #5cc750" type="primary" class="ele-btn-icon">
           <template #icon>
             <plus-outlined />
           </template>
@@ -19,7 +19,13 @@
         </a-button>
       </a-space>
       <!-- 表格 -->
-      <a-table row-key="userId" :dataSource="dataSource" :columns="columns" :scroll="{ x: 1000 }">
+      <a-table
+        bordered
+        row-key="userId"
+        :dataSource="dataSource"
+        :columns="columns"
+        :scroll="{ x: 1000 }"
+      >
         <template #headerCell="{ column }">
           <template v-if="column.key === 'checkbox'">
             <a-checkbox />
@@ -84,7 +90,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { getUserAPI } from '@/apis/user.js'
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -97,6 +104,12 @@ import {
   PieChartOutlined
 } from '@ant-design/icons-vue'
 import usersearch from './components/usersearch.vue'
+
+//获取用户列表数据
+onMounted(async () => {
+  const res = await getUserAPI()
+  console.log('userList: ', res)
+})
 
 // 表格数据
 const dataSource = ref([
@@ -144,7 +157,7 @@ const columns = ref([
   },
   {
     key: 'index',
-    width: 60,
+    width: 70,
     align: 'center',
     dataIndex: 'index',
     title: '编号'
