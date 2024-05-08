@@ -31,7 +31,7 @@
         <a-form-item class="ele-text-right" :wrapper-col="{ span: 24 }">
           <a-space>
             <a-button style="background-color: #5cc750" type="primary">查询</a-button>
-            <a-button>重置</a-button>
+            <!-- <a-button>重置</a-button> -->
           </a-space>
         </a-form-item>
       </a-col>

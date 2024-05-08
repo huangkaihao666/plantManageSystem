@@ -2,9 +2,34 @@
   <div class="ele-body">
     <a-card :bordered="false">
       <!-- 搜索表单 -->
-      <usersearch />
+      <!-- <usersearch /> -->
+      <a-form
+        :label-col="{ xl: 7, lg: 5, md: 7, sm: 4 }"
+        :wrapper-col="{ xl: 17, lg: 19, md: 17, sm: 20 }"
+      >
+        <a-row :gutter="8">
+          <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
+            <a-form-item label="用户账号">
+              <a-input v-model:value.trim="form.username" placeholder="请输入用户账号" allow-clear
+                ><template #suffix> <UserOutlined style="color: #ccc" /> </template
+              ></a-input>
+            </a-form-item>
+          </a-col>
+
+          <a-col :xl="6" :lg="12" :md="12" :sm="24" :xs="24">
+            <a-form-item class="ele-text-right" :wrapper-col="{ span: 24 }">
+              <a-space>
+                <a-button style="background-color: #5cc750" type="primary" @click="searchUsers"
+                  >查询</a-button
+                >
+                <!-- <a-button>重置</a-button> -->
+              </a-space>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
       <!-- 数据操作 -->
-      <a-space style="margin-bottom: 10px">
+      <!-- <a-space style="margin-bottom: 10px">
         <a-button style="background-color: #5cc750" type="primary" class="ele-btn-icon">
           <template #icon>
             <plus-outlined />
@@ -17,9 +42,11 @@
           </template>
           <span>删除</span>
         </a-button>
-      </a-space>
+      </a-space> -->
       <!-- 表格 -->
       <a-table
+        :pagination="pagination"
+        @change="handleTableChange"
         bordered
         row-key="userId"
         :dataSource="dataSource"
@@ -96,11 +123,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { getUserAPI, delUserAPI } from '@/apis/user.js'
 import {
-  PlusOutlined,
-  DeleteOutlined,
   UserOutlined,
   WhatsAppOutlined,
   ManOutlined,
@@ -109,8 +134,43 @@ import {
   SettingOutlined,
   PieChartOutlined
 } from '@ant-design/icons-vue'
-import usersearch from './components/usersearch.vue'
+// import usersearch from './components/usersearch.vue'
 import { message } from 'ant-design-vue'
+
+// 表单数据,查询用户
+const form = ref({
+  username: '',
+  nickname: '',
+  sex: '',
+  phoneNumber: ''
+})
+
+const searchUsers = () => {
+  console.log('form: ', form.value)
+  const filteredData = dataSource.value.filter((item) => {
+    const roleNameRegex = form.value.username ? new RegExp(form.value.username, 'i') : null
+
+    if (roleNameRegex && !roleNameRegex.test(item.username)) {
+      return false
+    }
+
+    return true
+  })
+
+  dataSource.value = filteredData
+  if (!dataSource.value.length) {
+    console.log('无符合条件的数据')
+    dataSource.value = data.value
+    message.error('抱歉！没有符合条件的数据')
+  } else {
+    if (form.value.username == '') {
+      dataSource.value = data.value
+      return
+    }
+    message.success('查询成功！')
+  }
+  console.log('filtered data: ', dataSource.value)
+}
 
 // 表格数据
 const dataSource = ref([
@@ -150,14 +210,16 @@ const dataSource = ref([
 ])
 
 //获取用户列表数据并格式化字段
+const data = ref([])
 onMounted(async () => {
   const res = await getUserAPI()
   console.log('userList: ', res)
-  dataSource.value = res.data
-  dataSource.value = dataSource.value.map((item, index) => {
+  data.value = res.data
+  data.value = data.value.map((item, index) => {
     index++
     return { ...item, index }
   })
+  dataSource.value = data.value
 })
 
 // 表格列配置
@@ -252,4 +314,21 @@ const handleDelUser = async (record) => {
 }
 
 //修改用户状态
+
+//对于每页数据的管理
+let pagination = reactive({
+  total: dataSource.value.length,
+  current: 1,
+  pageSize: 8,
+  showSizeChanger: true,
+  pageSizeOptions: ['5', '4', '3'],
+  showQuickJumper: true
+})
+// 对每页数据显示的交互
+let handleTableChange = (pagina) => {
+  console.log('pagination.current 第几页', pagina.current) //第几页
+  console.log('pagina.pageSize 一页多少 ', pagina.pageSize) //一页多少
+  pagination.current = pagina.current
+  pagination.pageSize = pagina.pageSize
+}
 </script>
