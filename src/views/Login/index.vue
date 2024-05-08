@@ -172,12 +172,15 @@ const onFinish = async () => {
     console.log('name', formState.username, formState.password)
     const res = await getLoginAPI(formState.username, formState.password)
     console.log('denglu', res)
-    if (res.token) {
+    if (res?.token && res?.role == 1) {
       console.log('token', res.token)
+      localStorage.removeItem('token')
       localStorage.setItem('token', res.token)
       localStorage.setItem('username', formState.username)
       message.success('登录成功！')
       router.replace('/')
+    } else if (res?.role == 2) {
+      message.error('抱歉！当前用户不是管理员，没有权限登录...')
     } else {
       message.error(res.response.data.data)
       return

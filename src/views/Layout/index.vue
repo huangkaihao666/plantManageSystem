@@ -1,5 +1,5 @@
 <template>
-  <a-layout style="width: 100vw; height: 100vh">
+  <a-layout style="min-height: 100vh">
     <a-layout-sider v-model:collapsed="collapsed" :trigger="null" collapsible>
       <div class="logo">
         <img src="../../assets/avatar.png" style="height: 30px" /><span
@@ -31,7 +31,7 @@
         </a-menu-item>
         <a-menu-item @click="handleRouteChange('/upLoadFile')" key="4">
           <FolderAddOutlined />
-          <span>文件上传</span>
+          <span>资源管理</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
@@ -67,6 +67,8 @@
                   title="确认退出吗?"
                   confirm-button-text="确认"
                   cancel-button-text="取消"
+                  ok-text="是"
+                  cancel-text="否"
                 >
                   <a-menu-item v-if="isLogin">退出登录</a-menu-item>
                 </a-popconfirm>
@@ -120,7 +122,8 @@ const confirm = async (e) => {
   localStorage.removeItem('token')
   localStorage.removeItem('username')
   message.success(res.data)
-  router.push('/login')
+  router.replace('/login')
+  return
 }
 const cancel = (e) => {
   console.log(e)

@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { message } from 'ant-design-vue'
+import router from '@/router/index'
 
 // 创建实例时配置默认值
 const httpInstance = axios.create({
@@ -24,14 +26,23 @@ httpInstance.interceptors.request.use(
 
 // 添加响应拦截器
 httpInstance.interceptors.response.use(
-  (res) => res.data,
-  (response) => {
+  (res) => {
     //统一错误提示
-
     //token失效
-    return response
+    const { data: response } = res || {}
+    if (response?.error && response?.error === 'Token has expired') {
+      message.error(response?.data)
+      // console.log(router)
+      // localStorage.removeItem('token')
+      router.push('/login')
+      return
+    }
+    return res?.data
   },
   function (error) {
+    // //统一错误提示
+    console.log('errRes', error)
+    message.error(error?.response?.data?.data)
     return Promise.reject(error)
   }
 )

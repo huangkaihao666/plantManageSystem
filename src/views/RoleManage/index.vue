@@ -30,17 +30,20 @@
           <template v-if="column.key === 'roleMark'">
             <UserAddOutlined style="margin-right: 5px" />{{ column.title }}
           </template>
-          <template v-if="column.key === 'roleComment'">
+          <template v-if="column.key === 'role'">
             <CommentOutlined style="margin-right: 5px" />{{ column.title }}
-          </template>
-          <template v-if="column.key === 'createTime'">
-            <HistoryOutlined style="margin-right: 5px" />{{ column.title }}
           </template>
           <template v-if="column.key === 'action'">
             <SettingOutlined style="margin-right: 5px" />{{ column.title }}
           </template>
         </template>
-        <template #bodyCell="{ column }">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'roleName'">
+            {{ record.username }}
+          </template>
+          <template v-if="column.key === 'role'">
+            {{ record.role === 1 ? '管理员' : '普通用户' }}
+          </template>
           <template v-if="column.key === 'action'">
             <a-space>
               <!-- <a>修改</a>
@@ -62,69 +65,40 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { getUserAPI } from '@/apis/user.js'
 import {
   PlusOutlined,
   DeleteOutlined,
   UserOutlined,
   UserAddOutlined,
   CommentOutlined,
-  HistoryOutlined,
   SettingOutlined
 } from '@ant-design/icons-vue'
 import rolesearch from './components/rolesearch.vue'
 
 // 表格行数据
-const dataSource = ref([
-  {
-    roleId: 1,
-    roleName: '管理员',
-    roleCode: 'admin',
-    comments: '管理员',
-    createTime: '2024-04-17 15:18:37',
-    index: '1'
-  },
-  {
-    roleId: 2,
-    roleName: '用户',
-    roleCode: 'user',
-    comments: '用户',
-    createTime: '2024-04-17 15:18:37',
-    index: '2'
-  },
-  {
-    roleId: 2,
-    roleName: '游客',
-    roleCode: 'user',
-    comments: '游客',
-    createTime: '2024-04-17 15:18:37',
-    index: '3'
-  },
-  {
-    roleId: 2,
-    roleName: '用户',
-    roleCode: 'user',
-    comments: '用户',
-    createTime: '2024-04-17 15:18:37',
-    index: '4'
-  },
-  {
-    roleId: 2,
-    roleName: '用户',
-    roleCode: 'user',
-    comments: '用户',
-    createTime: '2024-04-17 15:18:37',
-    index: '5'
-  }
-])
+const dataSource = ref([])
+
+//获取用户列表数据并格式化字段
+onMounted(async () => {
+  const res = await getUserAPI()
+  console.log('userList: ', res)
+  dataSource.value = res.data
+  dataSource.value = dataSource.value.map((item, index) => {
+    index++
+    return { ...item, index }
+  })
+  console.log('roleList', dataSource.value)
+})
 
 // 表格列配置
 const columns = ref([
-  {
-    key: 'checkbox',
-    width: 48,
-    align: 'center'
-  },
+  // {
+  //   key: 'checkbox',
+  //   width: 48,
+  //   align: 'center'
+  // },
   {
     title: '编号',
     key: 'index',
@@ -138,25 +112,25 @@ const columns = ref([
     dataIndex: 'roleName',
     align: 'center'
   },
+  // {
+  //   key: 'roleMark',
+  //   title: '角色标识',
+  //   align: 'center',
+  //   dataIndex: 'roleCode'
+  // },
   {
-    key: 'roleMark',
-    title: '角色标识',
-    align: 'center',
-    dataIndex: 'roleCode'
-  },
-  {
-    key: 'roleComment',
+    key: 'role',
     title: '备注',
     align: 'center',
-    dataIndex: 'comments'
+    dataIndex: 'role'
   },
-  {
-    key: 'createTime',
-    title: '创建时间',
-    align: 'center',
-    dataIndex: 'createTime',
-    ellipsis: true
-  },
+  // {
+  //   key: 'createTime',
+  //   title: '创建时间',
+  //   align: 'center',
+  //   dataIndex: 'createTime',
+  //   ellipsis: true
+  // },
   {
     title: '操作',
     key: 'action',

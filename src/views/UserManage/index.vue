@@ -74,11 +74,17 @@
           </template>
           <template v-else-if="column.key === 'action'">
             <a-space>
-              <a>修改</a>
+              <!-- <a>修改</a>
               <a-divider type="vertical" />
-              <a>重置密码</a>
-              <a-divider type="vertical" />
-              <a-popconfirm placement="topRight" title="确定要删除此用户吗？">
+              <a>重置密码</a> -->
+              <!-- <a-divider type="vertical" /> -->
+              <a-popconfirm
+                placement="topRight"
+                @confirm="handleDelUser(record)"
+                title="确定要删除此用户吗？"
+                ok-text="是"
+                cancel-text="否"
+              >
                 <a class="ele-text-danger">删除</a>
               </a-popconfirm>
             </a-space>
@@ -91,7 +97,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getUserAPI } from '@/apis/user.js'
+import { getUserAPI, delUserAPI } from '@/apis/user.js'
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -104,57 +110,63 @@ import {
   PieChartOutlined
 } from '@ant-design/icons-vue'
 import usersearch from './components/usersearch.vue'
-
-//获取用户列表数据
-onMounted(async () => {
-  const res = await getUserAPI()
-  console.log('userList: ', res)
-})
+import { message } from 'ant-design-vue'
 
 // 表格数据
 const dataSource = ref([
-  {
-    userId: 1,
-    username: '张三',
-    nickname: '用户一',
-    roles: [{ roleId: 1, roleName: '管理员' }],
-    status: 1,
-    sexName: '男',
-    phone: '15768372977',
-    createTime: '0000-00-00 00:00:00',
-    index: '1'
-  },
-  {
-    userId: 1,
-    username: '李四',
-    nickname: '用户二',
-    roles: [{ roleId: 1, roleName: '普通用户' }],
-    status: 1,
-    sexName: '男',
-    phone: '19865502885',
-    createTime: '1111-11-11 11:11:11',
-    index: '2'
-  },
-  {
-    userId: 1,
-    username: '王五',
-    nickname: '用户三',
-    roles: [{ roleId: 1, roleName: '普通用户' }],
-    status: 1,
-    sexName: '男',
-    phone: '17227853754',
-    createTime: '2222-22-22 22:22:22',
-    index: '3'
-  }
+  // {
+  //   userId: 1,
+  //   username: '张三',
+  //   nickname: '用户一',
+  //   roles: [{ roleId: 1, roleName: '管理员' }],
+  //   status: 1,
+  //   sexName: '男',
+  //   phone: '15768372977',
+  //   createTime: '0000-00-00 00:00:00',
+  //   index: '1'
+  // },
+  // {
+  //   userId: 1,
+  //   username: '李四',
+  //   nickname: '用户二',
+  //   roles: [{ roleId: 1, roleName: '普通用户' }],
+  //   status: 1,
+  //   sexName: '男',
+  //   phone: '19865502885',
+  //   createTime: '1111-11-11 11:11:11',
+  //   index: '2'
+  // },
+  // {
+  //   userId: 1,
+  //   username: '王五',
+  //   nickname: '用户三',
+  //   roles: [{ roleId: 1, roleName: '普通用户' }],
+  //   status: 1,
+  //   sexName: '男',
+  //   phone: '17227853754',
+  //   createTime: '2222-22-22 22:22:22',
+  //   index: '3'
+  // }
 ])
+
+//获取用户列表数据并格式化字段
+onMounted(async () => {
+  const res = await getUserAPI()
+  console.log('userList: ', res)
+  dataSource.value = res.data
+  dataSource.value = dataSource.value.map((item, index) => {
+    index++
+    return { ...item, index }
+  })
+})
 
 // 表格列配置
 const columns = ref([
-  {
-    key: 'checkbox',
-    width: 48,
-    align: 'center'
-  },
+  // {
+  //   key: 'checkbox',
+  //   width: 48,
+  //   align: 'center'
+  // },
   {
     key: 'index',
     width: 70,
@@ -170,42 +182,43 @@ const columns = ref([
     align: 'center',
     key: 'username'
   },
-  {
-    title: '手机号',
-    dataIndex: 'phone',
-    sorter: true,
-    showSorterTooltip: false,
-    align: 'center',
-    key: 'phone'
-  },
-  {
-    title: '性别',
-    dataIndex: 'sexName',
-    width: 100,
-    align: 'center',
-    key: 'sexName'
-  },
-  {
-    title: '角色',
-    key: 'roles',
-    align: 'center'
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    sorter: true,
-    showSorterTooltip: false,
-    ellipsis: true,
-    align: 'center',
-    key: 'createTime'
-  },
-  {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    width: 100,
-    align: 'center'
-  },
+
+  // {
+  //   title: '手机号',
+  //   dataIndex: 'phone',
+  //   sorter: true,
+  //   showSorterTooltip: false,
+  //   align: 'center',
+  //   key: 'phone'
+  // },
+  // {
+  //   title: '性别',
+  //   dataIndex: 'sexName',
+  //   width: 100,
+  //   align: 'center',
+  //   key: 'sexName'
+  // },
+  // {
+  //   title: '角色',
+  //   key: 'roles',
+  //   align: 'center'
+  // },
+  // {
+  //   title: '创建时间',
+  //   dataIndex: 'createTime',
+  //   sorter: true,
+  //   showSorterTooltip: false,
+  //   ellipsis: true,
+  //   align: 'center',
+  //   key: 'createTime'
+  // },
+  // {
+  //   title: '状态',
+  //   key: 'status',
+  //   dataIndex: 'status',
+  //   width: 100,
+  //   align: 'center'
+  // },
   {
     title: '操作',
     key: 'action',
@@ -213,4 +226,30 @@ const columns = ref([
     align: 'center'
   }
 ])
+
+//删除指定用户
+const handleDelUser = async (record) => {
+  console.log('del', record.username)
+  const res = await delUserAPI(record.username)
+  //删除失败测试
+  // const res = await delUserAPI('zs')
+  console.log('delUser: ', res)
+  if (res.response?.status && res.response.status != 200) {
+    message.error(res.response.data.data)
+    return
+  } else {
+    message.success(res.data)
+    //更新数据
+    const res1 = await getUserAPI()
+    console.log('userList: ', res1)
+    dataSource.value = res1.data
+    dataSource.value = dataSource.value.map((item, index) => {
+      index++
+      return { ...item, index }
+    })
+    return
+  }
+}
+
+//修改用户状态
 </script>

@@ -8,4 +8,12 @@ const getUserAPI = () => {
   })
 }
 
-export { getUserAPI }
+//删除指定用户
+const delUserAPI = (username) => {
+  return httpInstance({
+    url: `/api/user/${username}`,
+    method: 'DELETE'
+  })
+}
+
+export { getUserAPI, delUserAPI }
