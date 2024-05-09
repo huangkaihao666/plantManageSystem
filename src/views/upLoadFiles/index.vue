@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; justify-content: space-between">
+  <div style="display: flex; justify-content: space-around">
     <!-- 文件上传 -->
     <div style="width: 400px; height: 200px">
       <a-upload-dragger

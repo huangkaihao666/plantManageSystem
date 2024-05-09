@@ -87,7 +87,13 @@
               <a-divider type="vertical" />
               <a>分配权限</a>
               <a-divider type="vertical" /> -->
-              <a-popconfirm placement="topRight" title="确定要删除此角色吗？">
+              <a-popconfirm
+                @confirm="handleDelUser(record)"
+                ok-text="是"
+                cancel-text="否"
+                placement="topRight"
+                title="确定要删除此角色吗？"
+              >
                 <a class="ele-text-danger">删除</a>
               </a-popconfirm>
             </a-space>
@@ -103,7 +109,7 @@
 
 <script setup>
 import { ref, onMounted, reactive } from 'vue'
-import { getUserAPI } from '@/apis/user.js'
+import { getUserAPI, delUserAPI } from '@/apis/user.js'
 import { message } from 'ant-design-vue'
 import {
   UserOutlined,
@@ -174,6 +180,30 @@ onMounted(async () => {
   dataSource.value = data.value
 })
 
+//删除指定用户
+const handleDelUser = async (record) => {
+  console.log('del', record.username)
+  const res = await delUserAPI(record.username)
+  //删除失败测试
+  // const res = await delUserAPI('zs')
+  console.log('delUser: ', res)
+  if (res.response?.status && res.response.status != 200) {
+    message.error(res.response.data.data)
+    return
+  } else {
+    message.success(res.data)
+    //更新数据
+    const res1 = await getUserAPI()
+    console.log('userList: ', res1)
+    dataSource.value = res1.data
+    dataSource.value = dataSource.value.map((item, index) => {
+      index++
+      return { ...item, index }
+    })
+    return
+  }
+}
+
 // 表格列配置
 const columns = ref([
   // {
@@ -225,7 +255,7 @@ const columns = ref([
 let pagination = reactive({
   total: dataSource.value.length,
   current: 1,
-  pageSize: 8,
+  pageSize: 5,
   showSizeChanger: true,
   pageSizeOptions: ['5', '4', '3'],
   showQuickJumper: true

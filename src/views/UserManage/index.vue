@@ -319,7 +319,7 @@ const handleDelUser = async (record) => {
 let pagination = reactive({
   total: dataSource.value.length,
   current: 1,
-  pageSize: 8,
+  pageSize: 5,
   showSizeChanger: true,
   pageSizeOptions: ['5', '4', '3'],
   showQuickJumper: true
