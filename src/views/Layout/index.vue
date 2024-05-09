@@ -110,6 +110,10 @@ const isLogin = ref(false)
 const username = ref('admin')
 onMounted(() => {
   isLogin.value = localStorage.getItem('token') ? true : false
+  //跳转到登录页面
+  if (!isLogin.value) {
+    router.replace('/login')
+  }
   console.log('isLogin', isLogin.value)
   username.value = localStorage.getItem('username') ? localStorage.getItem('username') : 'admin'
   console.log('username', username.value)
