@@ -101,9 +101,28 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { getLogoutAPI } from '@/apis/login.js'
-
 const selectedKeys = ref(['1'])
 const collapsed = ref(false)
+//路由切换
+const router = useRouter()
+// 处理页面刷新之后高亮菜单和显示的组件不一致的情况
+onMounted(() => {
+  const route = useRoute()
+  // console.log('route', route.path);
+  if (route.path === '/') {
+    selectedKeys.value = ['1']
+  } else if (route.path === '/role') {
+    selectedKeys.value = ['2']
+  } else if (route.path === '/user') {
+    selectedKeys.value = ['3']
+  } else if (route.path === '/upLoadFile') {
+    selectedKeys.value = ['4']
+  }
+})
+const handleRouteChange = (path) => {
+  // 路由切换要使用router对象而不是route对象(获取当前路由元信息)
+  router.push(path)
+}
 
 // 登录状态
 const isLogin = ref(false)
@@ -133,27 +152,6 @@ const cancel = (e) => {
   console.log(e)
   message.error('退出登录取消！！！')
   return
-}
-
-//路由切换
-const router = useRouter()
-// 处理页面刷新之后高亮菜单和显示的组件不一致的情况
-onMounted(() => {
-  const route = useRoute()
-  // console.log('route', route.path);
-  if (route.path === '/') {
-    selectedKeys.value = ['1']
-  } else if (route.path === '/role') {
-    selectedKeys.value = ['2']
-  } else if (route.path === '/user') {
-    selectedKeys.value = ['3']
-  } else if (route.path === '/upLoadFile') {
-    selectedKeys.value = ['4']
-  }
-})
-const handleRouteChange = (path) => {
-  // 路由切换要使用router对象而不是route对象(获取当前路由元信息)
-  router.push(path)
 }
 
 // const breadcrumbData = ref([]);
